@@ -188,6 +188,19 @@ transforms the data returned with a function specified by the user.
         /**
          * (Required)
          *
+         * Name for enabled property in searchParameters values.
+         *
+         * @type {String}
+         * @default 'enabled'
+         */
+        searchParameterEnabledProperty: {
+          type: String,
+          value: 'enabled'
+        },
+
+        /**
+         * (Required)
+         *
          * Function used to create request sent to iron-ajax. Expected parameter in searchFunction.
          * Example structure:
          *
@@ -212,19 +225,6 @@ transforms the data returned with a function specified by the user.
          */
         searchParameters: {
           type: Object
-        },
-
-        /**
-         * (Required)
-         *
-         * Name for enabled property in searchParameters values.
-         *
-         * @type {String}
-         * @default 'enabled'
-         */
-        searchParameterEnabledProperty: {
-          type: String,
-          value: 'enabled'
         },
 
         /**
