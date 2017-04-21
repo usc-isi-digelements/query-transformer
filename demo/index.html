@@ -1,0 +1,118 @@
+<!--
+Copyright 2017 Next Century Corporation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
+    <link rel="import" href="../query-transformer.html">
+  </head>
+  <body unresolved>
+    <template is="dom-bind" id="demo">
+      <p>query-transformer example:</p>
+      <p>Properties:</p>
+      <ul>
+        <li>Page: 1</li>
+        <li>Page Size: 5</li>
+        <li>Process Request: true</li>
+        <li>Search On Empty Params: true</li>
+        <li>URL: 'http://localhost:9200/mockads/ad/_search'</li>
+        <li>Search Function: searchFunction = function(page, pageSize, searchParameters) { // see source code };</li>
+        <li>Search Parameters: <span>{{stringifySearchParam()}}</span></li>
+        <li>Result Function: resultFunction = function(data) { // see source code };</li>
+        <li>Results:
+          <ol>
+            <template is="dom-repeat" items="{{searchResults}}" as="result">
+              <li>Date: {{result}}</li>
+            </template>
+          </ol>
+        </li>
+      </ul>
+
+      <query-transformer
+        search-on-empty-params
+        error="{{searchError}}"
+        loading="{{searchLoading}}"
+        page="1"
+        page-size="5"
+        process-request
+        result-function="[[resultFunction]]"
+        results="{{searchResults}}"
+        search-parameters="[[searchParameters]]"
+        search-function="[[searchFunction]]"
+        url="http://localhost:9200/mockads/ad/_search">
+      </query-transformer>
+    </template>
+    <script>
+      (function(document) {
+        var demo = document.querySelector('#demo');
+
+        demo.searchParameters = {
+          state: {
+            'NY': {
+              category: 'City',
+              enabled: true,
+              key: 'NY',
+              text: 'NY'
+            }
+          }
+        };
+
+        demo.stringifySearchParam = function() {
+          return JSON.stringify(demo.searchParameters);
+        };
+
+        demo.resultFunction = function(data) {
+          var list = [];
+
+          data.hits.hits.forEach(function(item) {
+            list.push(item._source.date);
+          });
+
+          return list;
+        };
+
+        demo.searchFunction = function(page, pageSize, searchParameters) {
+          var query = {
+            query: {}
+          };
+
+          if(searchParameters && searchParameters.state) {
+            var keys = Object.keys(searchParameters.state);
+
+            if(keys.length) {
+              query.query = {
+                match: {
+                  state: keys[0]
+                }
+              };
+            }
+          } else {
+            query.query = {
+              match_all: {}
+            };
+          }
+
+          query.from = page;
+          query.size = pageSize;
+
+          return query;
+        };
+      })(document);
+    </script>
+  </body>
+</html>
