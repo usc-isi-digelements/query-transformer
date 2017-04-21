@@ -32,12 +32,12 @@ limitations under the License.
         <li>Search On Empty Params: true</li>
         <li>URL: 'http://localhost:9200/mockads/ad/_search'</li>
         <li>Search Function: searchFunction = function(page, pageSize, searchParameters) { // see source code };</li>
-        <li>Search Parameters: <span>{{stringifySearchParam()}}</span></li>
+        <li>Search Parameters: <span>{{stringifySearchParam(searchParameters.*)}}</span></li>
         <li>Result Function: resultFunction = function(data) { // see source code };</li>
         <li>Results:
           <ol>
             <template is="dom-repeat" items="{{searchResults}}" as="result">
-              <li>Date: {{result}}</li>
+              <li>Date: {{result.date}}, City: {{result.city}}, State: {{result.state}}</li>
             </template>
           </ol>
         </li>
@@ -80,7 +80,11 @@ limitations under the License.
           var list = [];
 
           data.hits.hits.forEach(function(item) {
-            list.push(item._source.date);
+            list.push({
+              date: item._source.date,
+              city: item._source.city,
+              state: item._source.state
+            });
           });
 
           return list;
