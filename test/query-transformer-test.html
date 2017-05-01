@@ -185,7 +185,7 @@ limitations under the License.
           expect(functionCalled).to.be.true;
         });
 
-        test('error and results are set to null before _body is set', function() {
+        test('error and results are set to null and total is set to 0 before _body is set', function() {
           element.error = 'error';
           element.results = 'results';
 
@@ -194,6 +194,7 @@ limitations under the License.
           element.searchFunction = function() {
             expect(element.error).to.be.null;
             expect(element.results).to.be.null;
+            expect(element.total).to.equal(0);
             return 'body';
           };
           element.searchParameters = {
