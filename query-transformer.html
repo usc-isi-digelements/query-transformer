@@ -34,6 +34,7 @@ transforms the data returned with a function specified by the user.
       process-request="[[processRequest]]"
       result-function="[[resultFunction]]"
       results="{{searchResults}}"
+      total="{{totalCount}}"
       search-parameters="[[searchParameters]]"
       search-function="[[searchFunction]]"
       url="http://localhost:9200/mockads/ad/_search">
@@ -55,6 +56,12 @@ transforms the data returned with a function specified by the user.
       last-response="{{_response}}"
       last-error="{{error}}">
     </iron-ajax>
+
+    <json-transform
+      data-in="[[_response]]"
+      data-out="{{total}}"
+      transform-function="[[_createTotalCountTransformFunction()]]">
+    </json-transform>
 
     <json-transform
       data-in="[[_response]]"
@@ -161,7 +168,7 @@ transforms the data returned with a function specified by the user.
         /**
          * (Output)
          *
-         * Error returned from iron-ajax request (if any).
+         * The query results.
          *
          * @type {Object}
          */
@@ -228,6 +235,20 @@ transforms the data returned with a function specified by the user.
         },
 
         /**
+         * (Output)
+         *
+         * The total count of query results.
+         *
+         * @type {Number}
+         * @default 0
+         */
+        total: {
+          notify: true,
+          type: Number,
+          value: 0
+        },
+
+        /**
          * (Required)
          *
          * The URL target of the request.
@@ -281,6 +302,18 @@ transforms the data returned with a function specified by the user.
             return !searchParameters[type][term][self.searchParameterEnabledProperty];
           });
         });
+      },
+
+      /**
+       * Returns the transform function for the total count.
+       *
+       * @return {Function}
+       * @private
+       */
+      _createTotalCountTransformFunction: function() {
+        return function(data) {
+          return data && data.length && data[0] && data[0].result && data[0].result.hits && data[0].result.hits.total ? data[0].result.hits.total : 0;
+        };
       },
 
       /**

@@ -53,6 +53,7 @@ limitations under the License.
           expect(element.page).to.equal(1);
           expect(element.pageSize).to.equal(25);
           expect(element.searchParameterEnabledProperty).to.equal('enabled');
+          expect(element.total).to.equal(0);
         });
 
         test('does have iron-ajax and json-transform elements', function() {
@@ -228,6 +229,53 @@ limitations under the License.
           });
         });
 
+        test('setting _response does use resultFunction to set new results', function() {
+          element.resultFunction = function(data) {
+            expect(data).to.deep.equal({
+              key1: 'value1'
+            });
+            return {
+              key2: 'value2'
+            };
+          };
+
+          element._response = {
+            key1: 'value1'
+          };
+          expect(element.results).to.deep.equal({
+            key2: 'value2'
+          });
+        });
+
+        test('setting _response does overwrite old results', function() {
+          element.resultFunction = function(data) {
+            return data;
+          };
+
+          element._response = [1];
+          expect(element.results).to.deep.equal([1]);
+          element._response = [2, 3];
+          expect(element.results).to.deep.equal([2, 3]);
+          element._response = [4];
+          expect(element.results).to.deep.equal([4]);
+        });
+
+        test('setting _response does reset old total', function() {
+          element.total = 1234;
+          element._response = {};
+          expect(element.total).to.deep.equal(0);
+        });
+
+        test('setting _response does set new total', function() {
+          element._response = [{
+            result: {
+              hits: {
+                total: 1234
+              }
+            }
+          }];
+          expect(element.total).to.deep.equal(1234);
+        });
       });
     </script>
   </body>

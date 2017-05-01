@@ -12,6 +12,7 @@ A Polymer Element that makes a POST request via `<iron-ajax>` element and transf
       process-request="[[processRequest]]"
       result-function="[[resultFunction]]"
       results="{{searchResults}}"
+      total="{{totalCount}}"
       search-parameters="[[searchParameters]]"
       search-function="[[searchFunction]]"
       url="http://localhost:9200/mockads/ad/_search">
