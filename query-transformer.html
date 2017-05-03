@@ -80,14 +80,16 @@ transforms the data returned with a function specified by the user.
       properties: {
 
         /**
-         * (Required)
+         * (Optional)
          *
          * Whether or not to create new iron-ajax request when searchParameters is empty.
          *
          * @type {Boolean}
+         * @default false
          */
         searchOnEmptyParams: {
-          type: Boolean
+          type: Boolean,
+          value: false
         },
 
         /**
