@@ -313,8 +313,12 @@ transforms the data returned with a function specified by the user.
        * @private
        */
       _createTotalCountTransformFunction: function() {
+        var self = this;
         return function(data) {
-          return data && data.length && data[0] && data[0].result && data[0].result.hits && data[0].result.hits.total ? data[0].result.hits.total : 0;
+          var total = data && data.length && data[0] && data[0].result && data[0].result.hits && data[0].result.hits.total ? data[0].result.hits.total : 0;
+          // Only returning the total doesn't work all the time (for unknown reasons) so just set it here as well.
+          self.set('total', total);
+          return total;
         };
       },
 
