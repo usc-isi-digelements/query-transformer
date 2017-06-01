@@ -50,6 +50,7 @@ limitations under the License.
           expect(element.url).to.not.exist;
           expect(element._body).to.not.exist;
           expect(element._response).to.not.exist;
+          expect(element.aggregationType).to.equal('');
           expect(element.page).to.equal(1);
           expect(element.pageSize).to.equal(25);
           expect(element.searchParameterEnabledProperty).to.equal('enabled');
@@ -81,9 +82,11 @@ limitations under the License.
           element.processRequest = true;
           expect(element._body).to.not.exist;
           var functionCalled = false;
-          element.searchFunction = function(page, pageSize, searchParameters, sortOrder) {
-            expect(page).to.equal(1);
-            expect(pageSize).to.equal(25);
+          element.searchFunction = function(searchParameters, config) {
+            expect(config.aggregationType).to.deep.equal('');
+            expect(config.page).to.equal(1);
+            expect(config.pageSize).to.equal(25);
+            expect(config.sortOrder).to.deep.equal('');
             expect(searchParameters).to.deep.equal({
               type: {
                 term: {
@@ -91,7 +94,6 @@ limitations under the License.
                 }
               }
             });
-            expect(sortOrder).to.deep.equal('');
             expect(element._body).to.not.exist;
             functionCalled = true;
             return 'body';

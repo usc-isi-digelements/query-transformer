@@ -78,7 +78,6 @@ transforms the data returned with a function specified by the user.
       is: 'query-transformer',
 
       properties: {
-
         /**
          * (Optional)
          *
@@ -90,6 +89,19 @@ transforms the data returned with a function specified by the user.
         searchOnEmptyParams: {
           type: Boolean,
           value: false
+        },
+
+        /**
+         * (Optional)
+         *
+         * The type for aggregation queries.  Used in `searchFunction` config object.
+         *
+         * @type {String}
+         * @default ''
+         */
+        aggregationType: {
+          type: String,
+          value: ''
         },
 
         /**
@@ -119,8 +131,7 @@ transforms the data returned with a function specified by the user.
         /**
          * (Optional)
          *
-         * The number of the current page of search results. Expected parameter
-         * in searchFunction.
+         * The number of the current page of search results.  Used in `searchFunction` config object.
          *
          * @type {Number}
          * @default 1
@@ -134,8 +145,7 @@ transforms the data returned with a function specified by the user.
         /**
          * (Optional)
          *
-         * The current page size for search results. Expected parameter
-         * in searchFunction.
+         * The current page size for search results.  Used in `searchFunction` config object.
          *
          * @type {Number}
          * @default 25
@@ -182,12 +192,7 @@ transforms the data returned with a function specified by the user.
         /**
          * (Required)
          *
-         * Function used to create request sent to iron-ajax. Takes the following three properties
-         * as arguments in this order:
-         * - page
-         * - pageSize
-         * - searchParameters
-         * - sortOrder
+         * Function used to create request sent to iron-ajax. Takes `searchParameters` and a config object with `aggregationType`, `page`, `pageSize`, and `sortOrder`.
          *
          * @type {Object}
          */
@@ -211,7 +216,7 @@ transforms the data returned with a function specified by the user.
         /**
          * (Required)
          *
-         * Function used to create request sent to iron-ajax. Expected parameter in searchFunction.
+         * Function used to create request sent to iron-ajax.  Used in `searchFunction`.
          * Example structure:
          *
          * {
@@ -240,7 +245,7 @@ transforms the data returned with a function specified by the user.
         /**
          * (Optional)
          *
-         * The sort order for the search results. Expected parameter in searchFunction.
+         * The sort order for the search results.  Used in `searchFunction` config object.
          *
          * @type {String}
          * @default ''
@@ -298,7 +303,7 @@ transforms the data returned with a function specified by the user.
 
       observers: [
         '_resetPage(searchParameters.*)',
-        '_transform(searchOnEmptyParams, page, pageSize, processRequest, searchFunction, searchParameters.*, sortOrder)'
+        '_transform(searchOnEmptyParams, aggregationType, page, pageSize, processRequest, searchFunction, searchParameters.*, sortOrder)'
       ],
 
       /**
@@ -364,7 +369,12 @@ transforms the data returned with a function specified by the user.
             return;
           }
 
-          this.set('_body', this.searchFunction(this.page, this.pageSize, this.searchParameters, this.sortOrder));
+          this.set('_body', this.searchFunction(this.searchParameters, {
+            aggregationType: this.aggregationType,
+            page: this.page,
+            pageSize: this.pageSize,
+            sortOrder: this.sortOrder
+          }));
         }
       },
 
