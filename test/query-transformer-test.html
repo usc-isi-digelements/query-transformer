@@ -53,6 +53,7 @@ limitations under the License.
           expect(element.page).to.equal(1);
           expect(element.pageSize).to.equal(25);
           expect(element.searchParameterEnabledProperty).to.equal('enabled');
+          expect(element.sortOrder).to.equal('');
           expect(element.total).to.equal(0);
         });
 
@@ -80,10 +81,17 @@ limitations under the License.
           element.processRequest = true;
           expect(element._body).to.not.exist;
           var functionCalled = false;
-          element.searchFunction = function(page, pageSize, searchParameters) {
-            expect(page).to.equal(element.page);
-            expect(pageSize).to.equal(element.pageSize);
-            expect(searchParameters).to.deep.equal(element.searchParameters);
+          element.searchFunction = function(page, pageSize, searchParameters, sortOrder) {
+            expect(page).to.equal(1);
+            expect(pageSize).to.equal(25);
+            expect(searchParameters).to.deep.equal({
+              type: {
+                term: {
+                  enabled: true
+                }
+              }
+            });
+            expect(sortOrder).to.deep.equal('');
             expect(element._body).to.not.exist;
             functionCalled = true;
             return 'body';
