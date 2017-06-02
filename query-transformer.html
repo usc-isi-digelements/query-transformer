@@ -16,7 +16,7 @@ limitations under the License.
 
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../iron-ajax/iron-ajax.html">
-<link rel="import" href="../json-transform/json-transform.html">
+<link rel="import" href="../json-combine/json-combine.html">
 <link rel="import" href="../lodash-import/lodash.html">
 
 <!--
@@ -57,17 +57,12 @@ transforms the data returned with a function specified by the user.
       last-error="{{error}}">
     </iron-ajax>
 
-    <json-transform
-      data-in="[[_response]]"
-      data-out="{{total}}"
-      transform-function="[[_createTotalCountTransformFunction()]]">
-    </json-transform>
-
-    <json-transform
-      data-in="[[_response]]"
+    <json-combine
+      data-in1="[[_response]]"
+      data-in2="[[resultConfig]]"
       data-out="{{results}}"
-      transform-function="[[resultFunction]]">
-    </json-transform>
+      combine-function="[[resultFunction]]">
+    </json-combine>
   </template>
 
   <script>
@@ -102,6 +97,21 @@ transforms the data returned with a function specified by the user.
         aggregationType: {
           type: String,
           value: ''
+        },
+
+        /**
+         * (Optional)
+         *
+         * The default value to set the results between queries.
+         *
+         * @type {Object}
+         * @default null
+         */
+        defaultResults: {
+          type: Object,
+          value: function() {
+            return null;
+          }
         },
 
         /**
@@ -164,6 +174,21 @@ transforms the data returned with a function specified by the user.
          */
         processRequest: {
           type: Boolean
+        },
+
+        /**
+         * (Optional)
+         *
+         * Item passed as the second argument to the result function.
+         *
+         * @type {Object}
+         * @default {}
+         */
+        resultConfig: {
+          type: Object,
+          value: function() {
+            return {};
+          }
         },
 
         /**
@@ -303,7 +328,8 @@ transforms the data returned with a function specified by the user.
 
       observers: [
         '_resetPage(searchParameters.*)',
-        '_transform(searchOnEmptyParams, aggregationType, page, pageSize, processRequest, searchFunction, searchParameters.*, sortOrder)'
+        '_transform(searchOnEmptyParams, aggregationType, page, pageSize, processRequest, searchFunction, searchParameters.*, sortOrder)',
+        '_updateTotalCount(_response)'
       ],
 
       /**
@@ -323,22 +349,6 @@ transforms the data returned with a function specified by the user.
             return !searchParameters[type][term][self.searchParameterEnabledProperty];
           });
         });
-      },
-
-      /**
-       * Returns the transform function for the total count.
-       *
-       * @return {Function}
-       * @private
-       */
-      _createTotalCountTransformFunction: function() {
-        var self = this;
-        return function(data) {
-          var total = data && data.length && data[0] && data[0].result && data[0].result.hits && data[0].result.hits.total ? data[0].result.hits.total : 0;
-          // Only returning the total doesn't work all the time (for unknown reasons) so just set it here as well.
-          self.set('total', total);
-          return total;
-        };
       },
 
       /**
@@ -362,7 +372,7 @@ transforms the data returned with a function specified by the user.
           var noSearchParameters = this._areAllDisabled(this.searchParameters);
 
           this.set('error', null);
-          this.set('results', null);
+          this.set('results', this.defaultResults);
           this.set('total', 0);
 
           if(noSearchParameters && !this.searchOnEmptyParams) {
@@ -385,6 +395,17 @@ transforms the data returned with a function specified by the user.
        */
       _resetPage: function() {
         this.page = 1;
+      },
+
+      /**
+       * Updates the total count using the given response.
+       *
+       * @param {Object} response
+       * @return {Function}
+       * @private
+       */
+      _updateTotalCount: function(response) {
+        this.set('total', (response && response.length && response[0] && response[0].result && response[0].result.hits && response[0].result.hits.total ? response[0].result.hits.total : 0));
       }
     });
   })();

@@ -51,18 +51,20 @@ limitations under the License.
           expect(element._body).to.not.exist;
           expect(element._response).to.not.exist;
           expect(element.aggregationType).to.equal('');
+          expect(element.defaultResults).to.be.null;
           expect(element.page).to.equal(1);
           expect(element.pageSize).to.equal(25);
+          expect(element.resultConfig).to.deep.equal({});
           expect(element.searchParameterEnabledProperty).to.equal('enabled');
           expect(element.sortOrder).to.equal('');
           expect(element.total).to.equal(0);
         });
 
-        test('does have iron-ajax and json-transform elements', function() {
+        test('does have iron-ajax and json-combine elements', function() {
           expect(element.$$('iron-ajax')).to.exist;
           expect(element.$$('iron-ajax').getAttribute('content-type')).to.equal('application/json');
           expect(element.$$('iron-ajax').getAttribute('method')).to.equal('POST');
-          expect(element.$$('json-transform')).to.exist;
+          expect(element.$$('json-combine')).to.exist;
         });
 
         test('_exists works', function() {
