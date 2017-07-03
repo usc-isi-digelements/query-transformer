@@ -268,6 +268,27 @@ transforms the data returned with a function specified by the user.
         },
 
         /**
+         * (Required)
+         *
+         * Used to create request sent to iron-ajax.  Used in `searchFunction`.
+         * Example structure:
+         *
+         * {
+         *    city: true,
+         *    state: false,
+         *    zip: false
+         * }
+         *
+         * @type {Object}
+         */
+        networkExpansionParameters: {
+          type: Object,
+          value: function() {
+            return {};
+          }
+        },
+
+        /**
          * (Optional)
          *
          * The sort order for the search results.  Used in `searchFunction` config object.
@@ -323,12 +344,25 @@ transforms the data returned with a function specified by the user.
          */
         _response: {
           type: Object
+        },
+
+        /**
+         * Whether or not query is a network expansion query.
+         *
+         * @type {Boolean}
+         * @default false
+         * @private
+         */
+        _isNetworkExpansionRequest: {
+          type: Boolean,
+          value: false
         }
       },
 
       observers: [
+        '_hasNetworkParametersChecked(networkExpansionParameters.*)',
         '_resetPage(searchParameters.*)',
-        '_transform(searchOnEmptyParams, aggregationType, page, pageSize, processRequest, searchFunction, searchParameters.*, sortOrder)',
+        '_transform(searchOnEmptyParams, aggregationType, page, pageSize, processRequest, searchFunction, searchParameters.*, sortOrder, networkExpansionParameters.*)',
         '_updateTotalCount(_response)'
       ],
 
@@ -379,12 +413,15 @@ transforms the data returned with a function specified by the user.
             return;
           }
 
+          this.resultConfig.networkExpansionQuery = this._isNetworkExpansionRequest;
+
           this.set('_body', this.searchFunction(this.searchParameters, {
             aggregationType: this.aggregationType,
             page: this.page,
             pageSize: this.pageSize,
             sortOrder: this.sortOrder
-          }));
+          },
+          this.networkExpansionParameters));
         }
       },
 
@@ -405,7 +442,22 @@ transforms the data returned with a function specified by the user.
        * @private
        */
       _updateTotalCount: function(response) {
-        this.set('total', (response && response.length && response[0] && response[0].result && response[0].result.hits && response[0].result.hits.total ? response[0].result.hits.total : 0));
+        if(this._isNetworkExpansionRequest) {
+          this.set('total', (response && response.length && response[0] && response[0].result && response[0].result.length === 2 && response[0].result[1].hits.total ? response[0].result[1].hits.total : 0));
+        } else {
+          this.set('total', (response && response.length && response[0] && response[0].result && response[0].result.hits && response[0].result.hits.total ? response[0].result.hits.total : 0));
+        }
+      },
+
+      /**
+       * Updates the _hasNetworkExpansion variable based on current status of networkExpansionParameters.
+       *
+       * @private
+       */
+      _hasNetworkParametersChecked: function() {
+        var self = this;
+        var networkExpansionQuery = _.findKey(self.networkExpansionParameters, function(param) { return param === true; }) ? true : false;
+        self.set('_isNetworkExpansionRequest', networkExpansionQuery);
       }
     });
   })();
