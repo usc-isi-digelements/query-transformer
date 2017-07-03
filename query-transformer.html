@@ -413,6 +413,7 @@ transforms the data returned with a function specified by the user.
             return;
           }
 
+          // TODO: fix issue here when resultConfig is not an object
           this.resultConfig.networkExpansionQuery = this._isNetworkExpansionRequest;
 
           this.set('_body', this.searchFunction(this.searchParameters, {
