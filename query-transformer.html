@@ -327,6 +327,18 @@ transforms the data returned with a function specified by the user.
         },
 
         /**
+         * Whether or not query is a network expansion query.
+         *
+         * @type {Boolean}
+         * @default false
+         */
+        isNetworkExpansionRequest: {
+          type: Boolean,
+          notify: true,
+          readOnly: true
+        },
+
+        /**
          * Request to pass along to iron-ajax element.
          *
          * @type {Object}
@@ -344,18 +356,6 @@ transforms the data returned with a function specified by the user.
          */
         _response: {
           type: Object
-        },
-
-        /**
-         * Whether or not query is a network expansion query.
-         *
-         * @type {Boolean}
-         * @default false
-         * @private
-         */
-        _isNetworkExpansionRequest: {
-          type: Boolean,
-          value: false
         }
       },
 
@@ -413,9 +413,6 @@ transforms the data returned with a function specified by the user.
             return;
           }
 
-          // TODO: fix issue here when resultConfig is not an object
-          this.resultConfig.networkExpansionQuery = this._isNetworkExpansionRequest;
-
           this.set('_body', this.searchFunction(this.searchParameters, {
             aggregationType: this.aggregationType,
             page: this.page,
@@ -443,7 +440,7 @@ transforms the data returned with a function specified by the user.
        * @private
        */
       _updateTotalCount: function(response) {
-        if(this._isNetworkExpansionRequest) {
+        if(this.isNetworkExpansionRequest) {
           this.set('total', (response && response.length && response[0] && response[0].result && response[0].result.length === 2 && response[0].result[1].hits.total ? response[0].result[1].hits.total : 0));
         } else {
           this.set('total', (response && response.length && response[0] && response[0].result && response[0].result.hits && response[0].result.hits.total ? response[0].result.hits.total : 0));
@@ -458,7 +455,7 @@ transforms the data returned with a function specified by the user.
       _hasNetworkParametersChecked: function() {
         var self = this;
         var networkExpansionQuery = _.findKey(self.networkExpansionParameters, function(param) { return param === true; }) ? true : false;
-        self.set('_isNetworkExpansionRequest', networkExpansionQuery);
+        self._setIsNetworkExpansionRequest(networkExpansionQuery);
       }
     });
   })();
