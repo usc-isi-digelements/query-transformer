@@ -271,17 +271,11 @@ transforms the data returned with a function specified by the user.
          * (Required)
          *
          * Used to create request sent to iron-ajax.  Used in `searchFunction`.
-         * Example structure:
-         *
-         * {
-         *    city: true,
-         *    state: false,
-         *    zip: false
-         * }
          *
          * @type {Object}
+         * @default {}
          */
-        networkExpansionParameters: {
+        searchConfig: {
           type: Object,
           value: function() {
             return {};
@@ -327,18 +321,6 @@ transforms the data returned with a function specified by the user.
         },
 
         /**
-         * Whether or not query is a network expansion query.
-         *
-         * @type {Boolean}
-         * @default false
-         */
-        isNetworkExpansionRequest: {
-          type: Boolean,
-          notify: true,
-          readOnly: true
-        },
-
-        /**
          * Request to pass along to iron-ajax element.
          *
          * @type {Object}
@@ -360,9 +342,8 @@ transforms the data returned with a function specified by the user.
       },
 
       observers: [
-        '_hasNetworkParametersChecked(networkExpansionParameters.*)',
         '_resetPage(searchParameters.*)',
-        '_transform(searchOnEmptyParams, aggregationType, page, pageSize, processRequest, searchFunction, searchParameters.*, sortOrder, networkExpansionParameters.*)',
+        '_transform(searchOnEmptyParams, aggregationType, page, pageSize, processRequest, searchFunction, searchParameters.*, sortOrder, searchConfig.*)',
         '_updateTotalCount(_response)'
       ],
 
@@ -418,8 +399,7 @@ transforms the data returned with a function specified by the user.
             page: this.page,
             pageSize: this.pageSize,
             sortOrder: this.sortOrder
-          },
-          this.networkExpansionParameters));
+          }, this.searchConfig));
         }
       },
 
@@ -440,22 +420,15 @@ transforms the data returned with a function specified by the user.
        * @private
        */
       _updateTotalCount: function(response) {
-        if(this.isNetworkExpansionRequest) {
-          this.set('total', (response && response.length && response[0] && response[0].result && response[0].result.length === 2 && response[0].result[1].hits.total ? response[0].result[1].hits.total : 0));
+        if(response && response.length && response[0] && response[0].result) {
+          if(_.isArray(response[0].result)) {
+            this.set('total', (response[0].result.length && response[0].result[0].hits && response[0].result[0].hits.total ? response[0].result[0].hits.total : 0));
+          } else {
+            this.set('total', (response[0].result.hits && response[0].result.hits.total ? response[0].result.hits.total : 0));
+          }
         } else {
-          this.set('total', (response && response.length && response[0] && response[0].result && response[0].result.hits && response[0].result.hits.total ? response[0].result.hits.total : 0));
+          this.set('total', 0);
         }
-      },
-
-      /**
-       * Updates the _hasNetworkExpansion variable based on current status of networkExpansionParameters.
-       *
-       * @private
-       */
-      _hasNetworkParametersChecked: function() {
-        var self = this;
-        var networkExpansionQuery = _.findKey(self.networkExpansionParameters, function(param) { return param === true; }) ? true : false;
-        self._setIsNetworkExpansionRequest(networkExpansionQuery);
       }
     });
   })();
