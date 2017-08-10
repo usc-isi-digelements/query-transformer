@@ -217,7 +217,7 @@ transforms the data returned with a function specified by the user.
         /**
          * (Required)
          *
-         * Function used to create request sent to iron-ajax. Takes `searchParameters` and a config object with `aggregationType`, `page`, `pageSize`, and `sortOrder`.
+         * Function used to create request sent to iron-ajax. Takes `searchParameters` and a config object with `aggregationType`, `page`, `pageSize`, `sortOrder`, and `custom`, which points to `searchConfig`.
          *
          * @type {Object}
          */
@@ -396,10 +396,11 @@ transforms the data returned with a function specified by the user.
 
           this.set('_body', this.searchFunction(this.searchParameters, {
             aggregationType: this.aggregationType,
+            custom: this.searchConfig,
             page: this.page,
             pageSize: this.pageSize,
             sortOrder: this.sortOrder
-          }, this.searchConfig));
+          }));
         }
       },
 
