@@ -58,6 +58,7 @@ limitations under the License.
           expect(element.searchParameterEnabledProperty).to.equal('enabled');
           expect(element.sortOrder).to.equal('');
           expect(element.total).to.equal(0);
+          expect(element.totalCountFunction).to.be.a('Function');
         });
 
         test('does have iron-ajax and json-combine elements', function() {
@@ -287,6 +288,29 @@ limitations under the License.
               }
             }
           }];
+          expect(element.total).to.deep.equal(1234);
+        });
+
+        test('setting _response result to an array does set new total', function() {
+          element._response = [{
+            result: [{
+              hits: {
+                total: 1234
+              }
+            }, {
+              hits: {
+                total: 5678
+              }
+            }]
+          }];
+          expect(element.total).to.deep.equal(1234);
+        });
+
+        test('setting _response does set new total using totalCountFunction', function() {
+          element.totalCountFunction = function() {
+            return 1234;
+          };
+          element._response = {};
           expect(element.total).to.deep.equal(1234);
         });
       });

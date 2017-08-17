@@ -310,6 +310,29 @@ transforms the data returned with a function specified by the user.
         },
 
         /**
+         * (Optional)
+         *
+         * The function to return the total count given the response.
+         *
+         * @type {Object}
+         * @default function(response)
+         */
+        totalCountFunction: {
+          type: Object,
+          value: function() {
+            return function(response) {
+              if(response && response.length && response[0] && response[0].result) {
+                if(_.isArray(response[0].result)) {
+                  return (response[0].result.length && response[0].result[0].hits && response[0].result[0].hits.total ? response[0].result[0].hits.total : 0);
+                }
+                return (response[0].result.hits && response[0].result.hits.total ? response[0].result.hits.total : 0);
+              }
+              return 0;
+            };
+          }
+        },
+
+        /**
          * (Required)
          *
          * The URL target of the request.
@@ -421,15 +444,7 @@ transforms the data returned with a function specified by the user.
        * @private
        */
       _updateTotalCount: function(response) {
-        if(response && response.length && response[0] && response[0].result) {
-          if(_.isArray(response[0].result)) {
-            this.set('total', (response[0].result.length && response[0].result[0].hits && response[0].result[0].hits.total ? response[0].result[0].hits.total : 0));
-          } else {
-            this.set('total', (response[0].result.hits && response[0].result.hits.total ? response[0].result.hits.total : 0));
-          }
-        } else {
-          this.set('total', 0);
-        }
+        this.set('total', this.totalCountFunction(response));
       }
     });
   })();
