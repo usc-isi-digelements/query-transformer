@@ -15,48 +15,15 @@ limitations under the License.
 -->
 
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
-    <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
-    <link rel="import" href="../query-transformer.html">
-  </head>
-  <body unresolved>
-    <template is="dom-bind" id="demo">
-      <p>query-transformer example:</p>
-      <p>Properties:</p>
-      <ul>
-        <li>Page: 1</li>
-        <li>Page Size: 5</li>
-        <li>Process Request: true</li>
-        <li>Search On Empty Params: true</li>
-        <li>URL: 'http://localhost:9200/mockads/ad/_search'</li>
-        <li>Search Function: searchFunction = function(page, pageSize, searchParameters) { // see source code };</li>
-        <li>Search Parameters: <span>{{stringifySearchParam(searchParameters.*)}}</span></li>
-        <li>Result Function: resultFunction = function(data) { // see source code };</li>
-        <li>Results:
-          <ol>
-            <template is="dom-repeat" items="{{searchResults}}" as="result">
-              <li>Date: {{result.date}}, City: {{result.city}}, State: {{result.state}}</li>
-            </template>
-          </ol>
-        </li>
-      </ul>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <script src="../../webcomponentsjs/webcomponents-loader.js"></script>
+  <link rel="import" href="../query-transformer.html">
+</head>
 
-      <query-transformer
-        search-on-empty-params
-        error="{{searchError}}"
-        loading="{{searchLoading}}"
-        page="1"
-        page-size="5"
-        process-request
-        result-function="[[resultFunction]]"
-        results="{{searchResults}}"
-        search-parameters="[[searchParameters]]"
-        search-function="[[searchFunction]]"
-        url="http://localhost:9200/mockads/ad/_search">
-      </query-transformer>
-    </template>
+<body unresolved>
+  <dom-bind id="demo">
     <script>
       (function(document) {
         var demo = document.querySelector('#demo');
@@ -90,7 +57,7 @@ limitations under the License.
           return list;
         };
 
-        demo.searchFunction = function(page, pageSize, searchParameters) {
+        demo.searchFunction = function(searchParameters, config) {
           var query = {
             query: {}
           };
@@ -111,12 +78,49 @@ limitations under the License.
             };
           }
 
-          query.from = page;
-          query.size = pageSize;
+          query.from = config.page;
+          query.size = config.pageSize;
 
           return query;
         };
       })(document);
     </script>
-  </body>
+
+    <template is="dom-bind">
+      <p>query-transformer example:</p>
+      <p>Properties:</p>
+      <ul>
+        <li>Page: 1</li>
+        <li>Page Size: 5</li>
+        <li>Process Request: true</li>
+        <li>Search On Empty Params: true</li>
+        <li>URL: 'http://localhost:9200/mockads/ad/_search'</li>
+        <li>Search Function: searchFunction = function(searchParameters, config) { // see source code };</li>
+        <li>Search Parameters: <span>{{stringifySearchParam(searchParameters.*)}}</span></li>
+        <li>Result Function: resultFunction = function(data) { // see source code };</li>
+        <li>Results:
+          <ol>
+            <template is="dom-repeat" items="{{searchResults}}" as="result">
+              <li>Date: {{result.date}}, City: {{result.city}}, State: {{result.state}}</li>
+            </template>
+          </ol>
+        </li>
+      </ul>
+
+      <query-transformer
+        search-on-empty-params
+        error="{{searchError}}"
+        loading="{{searchLoading}}"
+        page="1"
+        page-size="5"
+        process-request
+        result-function="[[resultFunction]]"
+        results="{{searchResults}}"
+        search-parameters="[[searchParameters]]"
+        search-function="[[searchFunction]]"
+        url="http://localhost:9200/mockads/ad/_search">
+      </query-transformer>
+    </template>
+  </dom-bind>
+</body>
 </html>

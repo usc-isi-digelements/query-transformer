@@ -406,7 +406,7 @@ transforms the data returned with a function specified by the user.
        * @private
        */
       _transform: function() {
-        if(this.processRequest && this.searchFunction) {
+        if(this.processRequest && this.searchFunction && this.searchParameters) {
           var noSearchParameters = this._areAllDisabled(this.searchParameters);
 
           this.set('error', null);
@@ -444,7 +444,9 @@ transforms the data returned with a function specified by the user.
        * @private
        */
       _updateTotalCount: function(response) {
-        this.set('total', this.totalCountFunction(response));
+        if(response) {
+          this.set('total', this.totalCountFunction(response));
+        }
       }
     });
   })();
