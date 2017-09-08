@@ -1,7 +1,7 @@
 {
   "name": "query-transformer",
   "description": "A Polymer Element that makes a POST request via <iron-ajax> element and transforms the data returned with a function specified by the user.",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "authors": ["Next Century Corporation"],
   "license": "Apache-2.0",
   "keywords": [
@@ -17,7 +17,7 @@
   "dependencies": {
     "polymer": "Polymer/polymer#^2.0.2",
     "iron-ajax": "PolymerElements/iron-ajax#^2.0.0",
-    "json-combine": "DigElements/json-combine#2.0.0",
+    "json-combine": "DigElements/json-combine#2.1.1",
     "lodash-import": "DigElements/lodash-import#~1.0.1"
   },
   "devDependencies": {
