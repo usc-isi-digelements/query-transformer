@@ -366,7 +366,7 @@ transforms the data returned with a function specified by the user.
 
       observers: [
         '_resetPage(searchParameters.*)',
-        '_transform(searchOnEmptyParams, aggregationType, page, pageSize, processRequest, searchFunction, searchParameters.*, sortOrder, searchConfig.*)',
+        '_transform(searchOnEmptyParams, aggregationType, page, pageSize, processRequest, searchFunction, sortOrder, searchConfig.*)',
         '_updateTotalCount(_response)'
       ],
 
@@ -433,7 +433,12 @@ transforms the data returned with a function specified by the user.
        * @private
        */
       _resetPage: function() {
-        this.page = 1;
+        if(this.page > 1) {
+          // Page change will call _transform().
+          this.set('page', 1);
+        } else {
+          this._transform();
+        }
       },
 
       /**
