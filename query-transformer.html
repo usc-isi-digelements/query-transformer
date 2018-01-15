@@ -217,7 +217,7 @@ transforms the data returned with a function specified by the user.
         /**
          * (Required)
          *
-         * Function used to create request sent to iron-ajax. Takes `searchParameters` and a config object with `aggregationType`, `page`, `pageSize`, `sortOrder`, and `custom`, which points to `searchConfig`.
+         * Function used to create request sent to iron-ajax. Takes `searchParameters` and a config object with `aggregationType`, `page`, `pageSize`, `sortKey`, `sortOrder`, and `custom`, which points to `searchConfig`.
          *
          * @type {Object}
          */
@@ -280,6 +280,19 @@ transforms the data returned with a function specified by the user.
           value: function() {
             return {};
           }
+        },
+
+        /**
+         * (Optional)
+         *
+         * The sort key for the search results.  Used in `searchFunction` config object.
+         *
+         * @type {String}
+         * @default ''
+         */
+        sortKey: {
+          type: String,
+          value: ''
         },
 
         /**
@@ -366,7 +379,7 @@ transforms the data returned with a function specified by the user.
 
       observers: [
         '_resetPage(searchParameters.*)',
-        '_transform(searchOnEmptyParams, aggregationType, page, pageSize, processRequest, searchFunction, sortOrder, searchConfig.*)',
+        '_transform(searchOnEmptyParams, aggregationType, page, pageSize, processRequest, searchFunction, sortKey, sortOrder, searchConfig.*)',
         '_updateTotalCount(_response)'
       ],
 
@@ -422,6 +435,7 @@ transforms the data returned with a function specified by the user.
             custom: this.searchConfig,
             page: this.page,
             pageSize: this.pageSize,
+            sortKey: this.sortKey,
             sortOrder: this.sortOrder
           }));
         }
