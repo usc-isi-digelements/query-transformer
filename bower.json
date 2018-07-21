@@ -9,7 +9,7 @@
     "polymer"
   ],
   "main": "query-transformer.html",
-  "homepage": "https://github.com/DigElements/query-transformer/",
+  "homepage": "https://github.com/usc-isi-digelements/query-transformer/",
   "ignore": [
     "/.*",
     "/test/"
@@ -17,8 +17,8 @@
   "dependencies": {
     "polymer": "Polymer/polymer#^2.0.2",
     "iron-ajax": "PolymerElements/iron-ajax#^2.0.0",
-    "json-combine": "DigElements/json-combine#2.1.1",
-    "lodash-import": "DigElements/lodash-import#~1.0.1"
+    "json-combine": "usc-isi-digelements/json-combine#2.1.1",
+    "lodash-import": "usc-isi-digelements/lodash-import#~1.0.1"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^2.0.0",
