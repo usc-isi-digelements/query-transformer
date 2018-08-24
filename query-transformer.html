@@ -391,8 +391,17 @@ transforms the data returned with a function specified by the user.
     observers: [
       '_resetPage(searchParameters.*)',
       '_transform(searchOnEmptyParams, aggregationType, page, pageSize, processRequest, searchFunction, sortKey, sortOrder, searchConfig.*)',
-      '_updateTotalCount(_response)'
+      '_updateTotalCount(_response)',
+      '_setPage(page)'
     ],
+
+    _setPage: function(newValue, oldValue) {
+      // console.log('page in qt');
+      // console.log('newValue', newValue, 'oldValue', oldValue);
+      if (newValue === undefined) {
+        this.set('page', oldValue);
+      }
+    },
 
     /**
      * Returns whether all the items in the searchParameters collection are disabled.
@@ -442,7 +451,7 @@ transforms the data returned with a function specified by the user.
         if (noSearchParameters && !this.searchOnEmptyParams) {
           return;
         }
-        console.log('query-t', this.page);
+
         this.set(
           '_body',
           this.searchFunction(this.searchParameters, {
@@ -463,7 +472,7 @@ transforms the data returned with a function specified by the user.
      * @private
      */
     _resetPage: function() {
-      console.log('restPage', this.page);
+      // console.log('restPage', this.page);
       if (this.page > 1) {
         // Page change will call _transform().
         this.set('page', 1);
